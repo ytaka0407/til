@@ -1,0 +1,20 @@
+質問したいこと
+テキスト254ページ確認画面の画像のプレビュー部分
+画像指定がない場合でもsrc＝”../member_picture/”までは常に表示するようになっているためかエラーになってる。
+解消するなら全部if文で囲って$_SESSION['join']['image']に中身があるときだけ表示すればOK？？
+↓
+試したけどこの時点で既にデータのある無しに関わらず名前として年月日時分秒の文字列が入って空じゃない判定できなかった。
+あとデバッグで確認したけどchackファイルに引き継がれるのはSESSIONのみ。
+指定のアップロードフォルダに$_SESSION['join']['image']に該当する画像があるか、調べる方法がありそう。やっぱ後で聞こ。
+もしくは、今知ってる範囲の方法だけ組み合わせるなら、$_SESSION['join']['image']の末尾3文字が拡張子かどうかで判断ならできそうだけど、なんかその調べ方すごください気がする。。。
+検索方法
+for eachで指定のフォルダのファイル名取得してって、$_SESSION['join']['image']に一致したらTRUEで抜けて終わり。でTRUEFALSEでif分岐したらいけるのかな。
+長いな。。 
+
+答え
+端的にまとめると、checkで分岐は手遅れなので、indexで$_FILEに中身があるかどうかで分岐させておく必要がある。
+$image = date('YmdHis') . $_FILES['profilephoto']['name'];
+move_uploaded_file($_FILES['profilephoto']['tmp_name'], '../member_picture/' . $image);
+$_SESSION['join']['image'] = $image;
+を行う条件が、$_FILESの中身のあるなしではなく、$errorのあるなしだけになっているため、画像があってもなくても$_SESSION［’image’］には画像があった場合に付けたい文字列が値として入ってしまう。
+だから、はじめから、$_FILESが空なら$filenameは空にして、$_SESSION［'image'］になにも入らないようにして、checkファイル側で判定すれば、$_SESSION［’image’］が空の場合にはimgタグを表示しない分岐を作れる。
