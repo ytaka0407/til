@@ -1,0 +1,28 @@
+ページネーション
+$this->loadComponent('Pagenator')でコンポーネントをロード。
+Initializeアクションに入れておくのが良い。
+ページネーションしたアクションで
+ $this->paginate($this->データを取得するテーブルクラス名); でページ限定したデータを取得。
+ テキスト例だとそのあと$dataに入れてビューに値を渡すので、
+$data= $this->paginate($this->People); 
+何件表示するか等のデータの取得条件は$this->pagenateにあらかじめ連想配列で入れておく。
+テキスト例だと一番最初にPublic変数で値を設定している。
+
+【公式】
+いったん $paginate 変数が定義されると、コントローラのアクションから PaginatorComponent の paginate() メソッドが使えるように なります。
+→つまり$this->paginate(=Publicで$paginate)で変数定義して初めてpaginateメソッドが使える。
+・$paginate 配列に含めることができるその他のキーは、 Model->find('all') メソッドのパラメータに似ています。つまり以下のものです: conditions, fields, order, limit, page, contain, joins, recursive 。前述のキーに加えて、追加したキーがそのままモデルの find() メソッドに渡されます。
+→基本の条件のlimit,order,sort,directionの他、contain・findメソッドで配列で入れてた条件を$paginateでも指定できる。
+・このメソッドはモデルによる find() の結果を返します。
+→そもそもpaginateメソッド実行すると返ってくるのはその条件を引き継いだfindメソッドの結果。 （編集済み） 
+
+16:20
+ここで$paginateに指定した値のpage、sort、directionをクエリーパラメータに指定することでページURLを変えている。
+余談だけどここのsort=idをageに変えたりdirectionをdescに変えたりしたらそれに対応した内容のページが同じく5件ずつで表示された。 （編集済み） 
+
+takashima-日曜午前  16:34
+変数$paginateに入れる条件として、直接カスタムファインダー指定もできる。
+ファインダー
+→テーブルクラスの中でreturn $query->で条件ずらずら書くやつ(p220あたり)
+クラス名は、find+〇〇で記述しているので、〇〇部分を$pagenateの配列の値に入れる。
+findByAge{}に対して'finder' => 'byAge' と指定。
