@@ -18,3 +18,12 @@ move_uploaded_file($_FILES['profilephoto']['tmp_name'], '../member_picture/' . $
 $_SESSION['join']['image'] = $image;
 を行う条件が、$_FILESの中身のあるなしではなく、$errorのあるなしだけになっているため、画像があってもなくても$_SESSION［’image’］には画像があった場合に付けたい文字列が値として入ってしまう。
 だから、はじめから、$_FILESが空なら$filenameは空にして、$_SESSION［'image'］になにも入らないようにして、checkファイル側で判定すれば、$_SESSION［’image’］が空の場合にはimgタグを表示しない分岐を作れる。
+
+
+答え
+端的にまとめると、checkで分岐は手遅れなので、indexで$_FILEに中身があるかどうかで分岐させておく必要がある。
+$image = date('YmdHis') . $_FILES['profilephoto']['name'];
+move_uploaded_file($_FILES['profilephoto']['tmp_name'], '../member_picture/' . $image);
+$_SESSION['join']['image'] = $image;
+を行う条件が、$_FILESの中身のあるなしではなく、$errorのあるなしだけになっているため、画像があってもなくても$_SESSION［’image’］には画像があった場合に付けたい文字列が値として入ってしまう。
+だから、はじめから、$_FILESが空なら$filenameは空にして、$_SESSION［'image'］になにも入らないようにして、checkファイル側で判定すれば、$_SESSION［’image’］が空の場合にはimgタグを表示しない分岐を作れる。
