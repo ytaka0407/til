@@ -117,3 +117,16 @@ dist　distribution 配布物
 src　source　ソースコード
 docs　document ドキュメント
 らしい。どこかのブロガーさんが色々まとめてくれていた。
+
+久しぶりにHTMLタグについてメモ
+dl・dt・dd
+何かを定義したい時に使う。
+dl（=definition list= 定義リスト）を枠として
+dt（=definition term=定義する単語）が定義したいテーマとか用語
+dd（=Definition Description=定義の説明）がその説明・定義内容とする。
+<dl>
+<dt>私の尊敬する人（の定義を下記に示す）<dt>
+<dd>福沢諭吉</dd>
+</dl>
+みたいな感じ。多分。
+この、定義。っていうのが、ddを書く人が決めてね！っていう意味でフォームのお題にdt、入力部分にddとして使ってると解釈。 
