@@ -35,3 +35,45 @@ $startが計算して出せたところで、LIMIT（開始位置,5）の開始�
 $memos(そのページで表示したいデータを丸ごと格納する配列)　=　（SELECT *FROM memos ORDER BY id LIMIT　$start　,5)と指定。
 (実際はprepareメソッド～executeメソッドで実行していく)
 これの無限ループ。 
+
+
+
+
+さて。少々テキストから離れていたので思い出すところから。。
+ページングのところ。
+//変数$pageには$$_REQUESTのページ（URLパラメータでくっついてきた値）を代入。もし空だったら1ページめとする。
+//もしパラメータが何も指定されていなくて$pageが空っぽだったら、$pageには1を入れる。（指定がなければ１ページ目を表示）
+$page=$_REQUEST['page'];
+if($page==''){
+    $page=1;
+}
+//if文がfalseの場合（つまり$pageに何か値が入っている）場合
+//$pageに入っている値と１とで大きい方を$pageに代入し直す。$pageにマイナスを指定された場合はここで１に修正される。
+//この判定を経た上で、$pageの数値と1を比較。もし$pageがマイナス指定などされていてもここで1に修正される。
+$page=max($page,　1）
+//同様に、最終ページより大きな数字を指定された場合も最終ページの数字を$pageに入れ直さなければならないのでこのあと最終ページを取得してminファンクションで比較する。
+データ数カウント、カウントした数を$cntに代入
+$counts=$db->query('SELECT COUNT(*) AS cnt FROM posts');
+$cnt=$counts->fetch();
+//最終ページは、データ数を５で割って切り上げた数。$maxpageに代入
+$maxpage=ceil($cnt['cnt']/5);
+//maxの時と同じで、既に$pageに入っている数値と今計算して切り上げた最終ページ数とで比較。小さい方を採用して$pageに代入し直す。
+$page=min($page,$maxpage);
+★ここまででこの後表示するページ数が確定。
+指定数が１より小さかったら１
+指定数がその時の最終ページ数より大きかったら最終ページ数
+その間の数字だったらそのまま採用
+のルール。 （編集済み） 
+
+takashima-日曜午前  09:59
+次は表示するメッセージのID指定
+$startは、そのページで表示開始するメッセージのID指定に使う。算出は指定ページの1個前のページ数×5（＝最初に表示するメッセージ）
+$start=($page-1)*5;　表示する最初のメッセージID
+表示するSQLは、ユーザー指定情報（ページ指定）が入ってるのでprepareメソッドでバインドしてから実行。
+$startから数えて5明細だけを表示したいのでLIMIT　$start,5　がつく。
+今回バインドしたいのは数値なので、execute...はNG。bindoParamもしくはbindValueを使う。
+★bindoParamもしくはbindValue(パラメータID, バインドしたいパラメータが入った変数,　必要ならパラメータに対してデータ型を指定。指定なしだと文字列指定)
+$posts=$db->prepare('SELECT m.name,m.picture,p.* FROM members m,posts p WHERE m.id=p.member_id ORDER BY p.created DESC LIMIT ？,5');
+$posts->bindparam(1,$start,PDO::PARAM_INT);
+$posts->execute();
+これで指定したページに表示させるメッセージだけが$postsに格納される。
