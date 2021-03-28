@@ -1,0 +1,20 @@
+find('list')の使い方。
+テーブルのうち特定のカラムのデータだけを配列形式で取得。
+引数なし→テーブルで指定しておいた$this->setDisplayField('name'); の指定内容(’name’)のカラムを取得。
+テーブルで指定したもの以外、もしくは複数カラムを取りたい場合はlistの後に配列形式で引数指定。
+カラム1つ['keyField'=>'カラム名']
+カラム2つ['keyField'=>'カラム名','valueField'=>’カラム名’]
+カラム3つ[’groupField=>カラム’名',keyfield'=>'カラム名','valueField'=>’カラム名’]
+$data = $this->People->find('list', [
+            'keyField' => 'name',
+            'valueField' => 'mail',
+            'groupField' => 'id']);
+]);
+これで、'id'['name']['mail']の順に三層の配列の形で取得できる。
+setdisplayfieldに何も指定していなくて、さらにメソッド呼び出しの時にも何もしていしていない場合
+プライマリーキー=>displayFieldの形式で取得。
+displayFieldはそのデータベースの表題（label）として使われているカラムのこと。表題っていうのがなんか曖昧。。プライマリーキーとは別でメインとなるキーワードでいいのかな。。
+ひとまずデフォルトでname、なければtitleカラムが割り当てられる。
+→よって、何も指定しないでfind（'list'）した場合は
+基本プライマリーキー=>name、nameカラムがない場合はプライマリーキー=>titleカラムを返す。とのこと。
+（指定なし自体が非推奨だろうけど。。）
