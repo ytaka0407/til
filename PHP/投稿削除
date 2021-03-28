@@ -1,0 +1,31 @@
+削除するリンク。
+もし$_SESSIONに入っているid（ログインしている人のid）と、$post（今表示しようとしている投稿）の$member_id（投稿者のid）が一致していたら
+<?php if($_SESSION['id']==$post['member_id']):?>
+［削除する］リンクを表示。表示の際に、メッセージidをurlパラメータに付加する。
+      [<a href="delete.php?id=<?php echo($post['id']);?>" style="color:#F33;">削除</a>]<?php endif;?>
+削除作業する方のページ。
+まず、処理全体がif文で条件付きになっている。
+$_SESSION['id']がからじゃなかったら（ユーザーがちゃんとログインしてたら）
+if(isset($_SESSION['id']))
+削除処理。
+phpパラメータで引き継がれていた、ユーザーが削除したい投稿のidを
+$id=$_REQUEST['id']で$idに代入。
+下記SQL文でそのidのメッセージの行を全部取得
+SELECT * FROM posts WHERE id=$id
+（勿論実際は$dbｰ>prepare～）
+もし、取得したメッセージのmember_idと$_SESSION ［'id’］が一致していれば本人の投稿なので
+$message['member_id']==$_SESSION['id']
+削除SQL文。
+’DELETE FROM posts where id=$id’
+ざっくりの流れは
+ログインしてるかチェック
+↓
+パラメータidでの投稿取得
+↓
+取得した投稿とセッションidを照合
+↓
+一致していたら削除実行。
+↓
+一覧に戻る。
+ちなみに削除は完了してるのに一覧ページに戻っても自分が更新するまで画面が削除した投稿残ったページのままという状態になっている。
+のぶさんきいたところSQLの削除の処理が追いついていないんじゃないかとな。。
