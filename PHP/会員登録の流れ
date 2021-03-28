@@ -1,0 +1,54 @@
+会員登録のところ復習とまとめ（テキストの流れ詳細）
+if (!empty($_POST)) {
+～～文字列空欄かどうかとかのチェックとか、登録内容に不備がないかのif文の中身。それぞれチェック。～～
+//もし、$_POST(入力フォームデータ)が空じゃなかったら、エラー項目の確認実行の処理をそれぞれの項目に実施。
+//入力必須項目がblankだったら、配列$errorにformnameをキーとしてエラー内容を表す文字列blankが入る。
+  if ($_POST['name'] == '') {
+        $error['name'] = 'blank';
+    }
+    if ($_POST['email'] == '') {
+        $error['email'] = 'blank';
+    }
+//もしパスワードの文字列の長さが4文字未満だったら、配列$errorにformnameをキーとしてエラー内容を表す文字列lengthが入る。
+    if (strlen($_POST['password']) < 4) {
+        $error['password'] = 'length';
+}
+//パスワードも空じゃないかチェック
+    if ($_POST['password'] == '') {
+        $error['password'] = 'blank';
+    }
+★$FILES['image']['name']でフォームに入ったファイル名。ここでは変数$filenameに代入。
+    $filename=$_FILES['image']['name'];
+★もし$filenameがこの時点でなにか入ってたらだったら（=ファイルアップロードされてたら）次の処理へ。
+$filenameが空ならファイルアップロードされていないので処理は飛ばしてOK
+ファイル末尾の3文字見に行って拡張子チェック。
+    if (!empty($filename)){　　　　　　もしファイル名変数$]filenameが空ではなかったら(!なので否定のif)　　
+        $ext=substr($filename,-3);　　　$extには$filenameのラスト3文字を格納
+        if($ext!='jpg'&& $ext!='gif'){　　   もし$extに入っているのが、jpgでもなく、gifでもなかったら
+            $error['image']='type';　　　　 配列$errorにエラー内容'type'格納
+        } （編集済み） 
+12:21
+ここまででエラー判定配列の中身が空だったら次に進む。（画像アップロードとセッションにデータを保存）
+if(empty($error)){　　　　   //$errorに何も入っていない(エラーが一つもなかったら)画像アップロード
+$image=date('YmdHis').$FILES['image']['name'];　　　　    //$imageには、年月日時間分秒+ファイル名を保存するファイル名として代入
+★$_FILES['image']['tmp_name']は処理中に一時保存されているファイル名。)テンポラリファイル。保存場所がサーバー内のTemp領域という一時保存場所らしい。
+名前だけ見るのなら、アップデートされたファイルのファイル名、で問題なし。（=保存されるファイル名ではない。必ずしも）
+★move_uploaded_file(アップロードしたいファイルの名前，パス+名前で場所指定。ファイル名変えたければここでパスの後のファイル名を変更する。)
+    move_uploaded_file($_FILES['image']['tmp_name']，. ./member_picture/'.$image);
+★セッションに保存（書きかけ）
+［join］という名前でセッションにformの中身（$_POST）を格納。
+$_SESSION['join']=$_POST;
+ここよくわからん。。
+$_SESSION['join']['image']=$image;
+ページ飛ぶ。
+header('Location:check.php'); 
+
+二次元配列っぽくなってくると混乱するー。
+フォームの情報取得してセッションに保存するところ(P251)
+…９のところ。
+$_SESSION[’join’]=$_POST
+$_SESSION[’join]['image']=$image($imageには最終的に保存するファイル名)
+①$_SESSION[’join’]に$_POSTを格納。
+②$_POST内の[’image’]要素を指定して$imageを格納する。
+$_SESSION[’join’]の[’image’]
+をさすのに$_SESSION[’join’][’image’]と左辺を記述 
