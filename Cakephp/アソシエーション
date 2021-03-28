@@ -1,0 +1,18 @@
+$biditem = $this->Biditem->get($id, ['contain' => ['Users', 'Bidinfo', 'Bidinfo.Users']]);
+この時のusersはBiditemに紐づいたuser(出品者)
+Bidinfo.usersはbidinfoに紐づいたuser(入札者)。
+同じテーブル2回取りたい時はアソシエーションに従ってドットでつなげて書くか、それぞれのアソシエーションを配列で記述してネストすることもできる
+(公式では動的ファインダーの例しかなかったけど。getでもできるのかは試してない。なぜならまだテンプレートが白紙のため。)
+containいろいろ(公式のコピペ)
+$query = $articles->find()->contain([
+    'Authors' => ['Addresses'], 'Comments' => ['Authors']
+]);
+$query = $articles->find()->contain([
+    'Authors.Addresses',
+    'Comments.Authors'
+]);
+３つつないでもいいらしい。。(複雑すぎてついていけなくなりそう。。)
+$query = $products->find()->contain([
+    'Shops.Cities.Countries',
+    'Shops.Managers'
+]);
