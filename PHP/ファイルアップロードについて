@@ -1,3 +1,15 @@
+$_FILES は HTTP POST でアップロードされた値を取得するファイルアップロード変数
+クライアントからサーバーへファイルをアップロードするには、HTML の formタグ の method属性 を POST にするHTML の formタグ enctype属性 を multipart/form-data にするHTML の inputタグ type属性 を file にする
+$_FILESには、アップロードされたファイルの
+$_FILES['inputで指定したname']['name']：ファイル名
+$_FILES['inputで指定したname']['type']：ファイルのMIMEタイプ
+$_FILES['inputで指定したname']['tmp_name']：一時保存ファイル名
+$_FILES['inputで指定したname']['error']：アップロード時のエラーコード
+$_FILES['inputで指定したname']['size']：ファイルサイズ（バイト単位）
+の5種類のデータが格納される
+わかりやすかったからコピペ。。
+＄FILES[][]なんて書き方前に出てきたっけ・・
+
 ファイルのアップロード
 入力フォーム側
 formタグ内ににenctype属性の指定が必須
