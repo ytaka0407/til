@@ -1,0 +1,49 @@
+認可(教科書パターン：ControllerAuthorize)
+公式：「ControllerAuthorize では、コントローラーのコールバックで認可チェックを処理することができます。」
+ parent::initialize();
+        $this->loadComponent('Auth', [
+            'authorize' => 'Controller',
+        ]);
+呼び出すアクションは決まっている。
+public function isAuthorized($user = null)
+    {....
+かならずisAuthorizedを呼び出し。 （編集済み） 
+
+takashima-日曜午前  00:06
+認可(教科書パターン：ControllerAuthorize)
+「コントローラーのアクションが完全に公開すべきものであったり、ユーザーのログインが 不要であったりという場合があります。 AuthComponent は悲観的であり、デフォルトでは アクセスを拒否します。」
+悲観的らしく、デフォルトではログイン認証後さらに認可を通った人だけがアクセス可になる。
+・例外として認可なしアクセス許可するアクションがどこなのかをbeforefilterに書き
+・isAuthorizeには区別する方法を書く。
+これがテキストの書き方。 （編集済み） 
+
+takashima-日曜午前  00:19
+認可
+こういう書き方もあるらしい。
+$this->Auth->config('authorize', ['Controller']); 　デフォルトの書き方
+これinitializeに書くのかな。明記してるの探せず(眠い)
+■逆に認可処理をなしにしてみんな通したい場合
+$this->Auth->config('authorize', false); 　認可全部OFF
+
+■OFFにして、逆にアクセス拒否するページの設定。認可OFFと併用するっぽい？？
+認可OFFにしてる場合に拒否リスト作ったら誰もアクセスできなくなるはず。非公開ページとかかな。
+// 全てのアクションを拒否。
+$this->Auth->deny();
+
+// １つのアクションを拒否。
+$this->Auth->deny('add');
+ｎ
+// アクションのグループを拒否。
+$this->Auth->deny(['add', 'edit']);
+
+■認可ONの時に一部認可なしにしたい場合(上のControllerAuthorizeの書き方の時のbeforeFilterとほぼ同じっぽい)
+// すべてのアクションを許可。
+$this->Auth->allow();
+
+// index アクションのみ許可。
+$this->Auth->allow('index');
+
+// view と index アクションのみ許可
+$this->Auth->allow(['view', 'index']);
+
+あぁねむい。。 
