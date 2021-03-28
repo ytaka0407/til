@@ -1,0 +1,19 @@
+ちょいまけさんご紹介リンクのFROMでの副問合せ使用例。自分用にメモ。
+select b.tokuisaki,b.uriage,b.YYYYMM
+from (select AVG(uriage) as heikin from tokuisaki) a,tokuisaki b
+where a.heikin < b.uriage;
+分解↓
+(select AVG(uriage) as heikin from tokuisaki) a で、まず副問合せ結果を取得。
+from (select AVG(uriage) as heikin from tokuisaki) a,tokuisaki  FROM 　さっき取ったデータをa、もう一個のテーブルをbとして取得元データとする。
+where a.heikin < b.uriage; WHERE　集計条件として、aテーブルのheikinという値よりbテーブルのuriageの方が大きいものに限定。
+select b.tokuisaki,b.uriage,b.YYYYMM SELECT  このパターンはbテーブルからのデータのみ。
+この例は単一行副問合せだけど、もしWHERE句でaテーブルの他のデータも使いたかったら、FROMでまとめて取得したあとにWHERE句で個別に取り出して比較していくとスッキリかけそう。
+
+読み込みの順番がSELECTより前かあとかで別名を直接使えるか変わる。
+HAVINGでは使えないけどORDERBY時点ではもう計算結果→別名の読み替えも済んでるからつかってOK。
+ついHAVINGで使いたくなるわ。。
+
+相関副問合せ
+SELECT 列  FROM テーブル1
+WHERE EXISTS
+(SELECT * FROM テーブル2 WHERE テーブル1.列=テーブル2.列)
