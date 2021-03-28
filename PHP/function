@@ -1,0 +1,42 @@
+基本的なfunctionの使い方
+function:処理のかたまり。（中身はユーザーが好きに決められる。）
+①引数も何もなくただfunctionの処理を行うだけでいい時。
+関数定義
+function apple(){
+echo 'りんごはあかい';
+}
+↓
+呼び出し
+apple();
+結果
+りんごはあかい
+②引数を都度指定したい時。
+関数定義
+function red($fruit){
+echo '$fruit'．’ is red.';
+}
+↓
+呼び出し
+$redfruit = 'apple';
+    red($redfruit);
+$redfruit = 'cherry';
+    red($redfruit);
+結果
+apple is red.
+cherry is red.
+③引数つけて返り値もほしい時（いい例が思いつかない。。)
+関数定義
+function year($Era){
+   $y=$Era-2018;
+  return $y;　　　　ここが増える。どの結果を返り値として呼び出し元に返すか設定。演算結果だから変数代入してるけど返り値のある関数直接指定してもいい。（テキストの例）
+}
+↓
+呼び出し
+$thisyear=2020;
+echo ’西暦’．$thisyear．’年は、令和’．year($thisyear)．’年です。’　　　　この時のyear($thisyear)＝functionから返された$y
+結果
+西暦2020年は令和2年です。
+作りながら思ったけどfor文でくくると元号早見表的なのが作れるな。
+あと元号別でfunctionの数式分けてユーザー選択肢で分けたりできそう。
+（完全に目的それてる。しかもちょっとしてからそんなものfunctionで分けるほどの処理じゃないことにも気づいた。）
+そして軽い気持ちで作ったコードが間違ってて悔しくて直している。。テキスト放って。。
