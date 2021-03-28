@@ -1,0 +1,57 @@
+書き直し機能
+
+セッションに一旦値を保存した状態で、登録内容確認のページに一度行き、そのあとに入力画面に戻る。
+会員登録画面で、初期表示にするか。セッションの値を表示した状態（入力済みの状態）の表示にするかの分岐が発生する。
+チェックページ側の書き直すリンク
+<a href="index.php?action=rewrite">&laquo;&nbsp;書き直す</a>
+会員登録ページ側の書き方
+if ($_REQUEST['action']=='rewrite'){　　　　　　もし、$_REQUEST［’action’］（urlパラメータ）が’rewrite’だったら（＝書き直しで戻ってきたページなら）
+    $_POST=$_SESSION['join'];　　　　　　　　   空の$_POSTに$_SESSION［’join’］を格納
+    $error['rewrite']=true;　　　　　　　　　　　 $error［’rewrite’］にtrueを入れる。（$errorを空っぽじゃなくすため。）
+分岐のキーとして
+urlパラメータとしてaction=rewriteつきで会員登録画面表示になった場合は、$_POSTに、$_SESSION［join］を戻す。
+（最初に表示した登録ページでユーザーが入力した値$_POSTを、$_SESSION［’join’］に入れてチェック画面に引きついだのを
+戻って再表示したページにまた$_SESSION［’join’］から$_POSTに戻した。） （編集済み） 
+
+takashima-日曜午前  18:41
+３行目の $error['rewrite']=true;　
+<?php if (!empty($error)) : ?>
+                        <p class="error">*恐れ入りますが、画像を改めて指定して下さい</p>
+を成立させるためなのはわかるんだけど
+これこの後にエラーチェックして画像アップロードとセッションに値保存する時に
+if (empty($error)) {
+           $image = date('YmdHis') . $_FILES['profilephoto']['name'];
+        move_uploaded_file($_FILES['profilephoto']['tmp_name'], '../member_picture/' .$image);
+        $_SESSION['join'] = $_POST;
+        $_SESSION['join']['profilephoto'] = $image;
+        header('Location: check.php');
+        exit();
+    }
+ 
+答え
+formボタンのsubmitを押して、ページの上から再度プログラム実行する時点で一旦$errorの中身は空になっている。
+★★前提条件として、意図的に引き継がれていない変数は、プログラムを実行し直したり通信し直すたびに全部リセットされる。
+★Fromリファレンスシートより
+■action属性は送信先URLを指定する
+	action属性は、送信先URLを指定する際に使用します。
+action属性が空欄だった場合は自分のページの頭に再度飛ぶ。
+つまり、index.phpにアクセスして登録画面表示→入力→登録するボタン押す作業をしている時、裏での流れは
+①初回もしくはrewriteでアクセス直後
+<?php
+require('../dbconnect.php');
+session_start();
+if (!empty($_POST)) {......までは実行される。でもアクセスした直後は当然$_POSTは空っぽだからif文の分岐の中身は全部飛ばす。
+②飛ばした後、その下の
+if ($_REQUEST['action'] === 'rewrite') {
+    $_POST = $_SESSION['join'];
+    $error['rewrite'] = true;
+}
+の判定をして、その結果を持ったままでhtml表示に入る。
+★一番下まで表示した後、ユーザーがsubmitボタン押すまでは    $error['rewrite'] = true;が生きている。
+③submitボタンを押されると、（ここではaction=””だから）ページの頭に戻って
+<?php
+require('../dbconnect.php');
+session_start();
+から再スタート。
+今度はsubmit押されたformのデータ持った状態での2周めだから、if分の分岐が変わってエラーチェックが実行される。
+のぶさんわかりやすかったです。ありがとうございました！
