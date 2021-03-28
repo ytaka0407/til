@@ -1,0 +1,81 @@
+findメソッド。とりあえずわかったところまで。
+find('all')
+テーブルの全データを抜く(型とかも含んでるっぽい。)
+抜いた後にforeachで一個ずつ取り出せる。
+find('list')
+テーブルクラスで
+$this->setDisplayField('　'); に入れたエンティティ(テキストではname)を
+$this->setPrimaryKey('　');に指定したプライマリーキー(テキストではid)を添字にして取り出せる。
+
+takashima-日曜午前  01:25
+公式曰く、array('fields' => array('キー, '値')で指定もできるらしい。
+1つめ
+public function some_function() {
+    // ...
+    $justusernames = $this->Article->User->find('list', array(
+        'fields' => array('User.username')
+    ));
+→指定が一つだと勝手にPrimaryKeyが添え字になる。(指定なしならsetDisplayFieldのエンティティになる)↓
+(
+    //[id] => 'username',
+    [213] => 'AD7six',
+    [25] => '_psychic_',
+    [1] => 'PHPNut',
+    [2] => 'gwoo',
+    [400] => 'jperras',
+)
+2つ目
+    $usernameMap = $this->Article->User->find('list', array(
+        'fields' => array('User.username', 'User.first_name')
+    ));
+'User.username', 'User.first_name'を指定したら
+User.username[User.first_name] の配列。↓
+$usernameMap = Array
+(
+    //[username] => 'firstname',
+    ['AD7six'] => 'Andy',
+    ['_psychic_'] => 'John',
+    ['PHPNut'] => 'Larry',
+    ['gwoo'] => 'Gwoo',
+    ['jperras'] => 'Joël',
+)
+３つ目。
+$usernameGroups = $this->Article->User->find('list', array(
+        'fields' => array('User.username', 'User.first_name', 'User.group')
+    ));
+$usernameGroups = Array
+(
+    ['User'] => Array
+    (
+        ['PHPNut'] => 'Larry',
+        ['gwoo'] => 'Gwoo',
+    )
+    ['Admin'] => Array
+    (
+        ['_psychic_'] => 'John',
+        ['AD7six'] => 'Andy',
+        ['jperras'] => 'Joël',
+    )
+)
+3つ指定すると1つ目がキーの二次元配列になって2層目に残りの値が格納される。
+('User.username', 'User.first_name', 'User.group')で指定すると、
+User.username[User.first_name]と
+User.username[User.group]でデータが取れる。↓
+$usernameGroups = Array
+(
+    ['User'] => Array
+    (
+        ['PHPNut'] => 'Larry',
+        ['gwoo'] => 'Gwoo',
+    )
+    ['Admin'] => Array
+    (
+        ['_psychic_'] => 'John',
+        ['AD7six'] => 'Andy',
+        ['jperras'] => 'Joël',
+    )
+)
+これは扱いやすそうだ。。 （編集済み） 
+01:28
+関係ないけどcakephpの公式、cookbookっていうのね。かわいいな。
+また頑張ってこまめに公式読も。
