@@ -1,0 +1,41 @@
+あれ、P380の頭の最高金額の入札の$bidrequestの、$biditem_id手掛かりにして$bidinfoのエンティティ埋めてくところのテキスト見本
+        if (!empty($bidrequest)) {
+            //Bidinfoの各種プロパティを設定して保存する
+            $bidinfo->user_id = $bidrequest->user_id;
+            $bidinfo->user=$bidrequest->user; →これおかしい気がする。。$bidinfoにuserなんてエンティティないぞ。
+            $bidinfo->price = $bidrequest->price;
+            $this->Bidinfo->save($bidinfo);
+            
+        }
+仮にこれで該当なしの命令が紛れてたとしても、埋めれられてないエンティティがないから挙動は問題なさそうな気はするけど(まだビューまでできてないからわからん)、
+最後にsaveしてるしここは$bidinfoのカラムと一致してないとだめなところだよね。
+多分1周目はテーブルの構造も曖昧なまま半分コピペで2周目もこの辺半泣きで書いてたから気づかなかった。 
+
+
+takashima-日曜午前  2ヶ月前
+答え→やっぱり必要。
+エンティティの存在目的がデータベースに保存する目的のものという認識でいた
+↓
+(正)それもそうだけど、そのエンティティのカラムに関係ない情報も入れてもOK。その場合はsaveしても無視されるだけでエラーにはならない。ただの変数としてそのまま値保持してほかの変数に値渡したりもできる。
+疑問だったのは
+①$bidinfo = $this->Bidinfo->newEntity();
+空のエンティティを作っておく。
+②$bidrequest = $this->Bidrequests->find('all', [
+                'conditions' => ['biditem_id' => $id],
+                'contain' => ['users'],
+                'order' => ['price' => 'desc']
+            ])->first();
+最高金額の入札の情報を入札者のユーザー情報とかも全取り
+③$bidinfo->user_id = $bidrequest->user->id;
+                $bidinfo->user = $bidrequest->user;
+                $bidinfo->price = $bidrequest->price;
+$bidinfo(エンティティ)に各データを格納
+④$this->Bidinfo->save($bidinfo);
+データベース更新
+なんで④でデータベース更新するのに関係ない$bidinfo->userなんて作ってuser情報全部保存してるんだろ。ってとこでした。
+ 結論としては、確かにBidinfoテーブル更新目的だけならいらないけど、ここでの$bidinfoは後々ビューテンプレート側で必要なユーザー情報も(Bidinfoテーブルに関係ないけど)一緒に取って一緒に引き継ぐための変数としても役割も果たすため、ここで最高入札情報&そのユーザーの情報という形でまとめて値を保持している。
+からの、
+⑤$biditem->bidinfo = $bidinfo;
+その値全部$biditemに渡して
+⑥$this->set(compact('biditem', 'bidrequests'));
+ビューテンプレートには$biditemの値だけでbiditemの情報を全部渡す。
